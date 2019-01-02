@@ -13,7 +13,7 @@ RUN apk add --no-cache \
     git \
     musl-dev
 COPY . /src/github.com/leftbrainstuff/static-website/
-RUN go install -ldflags '-s -w'
+RUN node install -ldflags '-s -w'
 
 # ---
 
