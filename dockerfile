@@ -1,35 +1,19 @@
-FROM leftbrainstuff/static-website
+FROM golang:1.11.2-alpine3.8
 
-RUN apt-get update
+# Set the working directory
+WORKDIR /go/src/github.com/hugomd/go-example
 
-# Ruby
-RUN apt-get install ruby ruby-dev ruby-bundler curl apt-utils -y
-RUN gem install sass --no-user-install
-RUN gem install mime-types:2.0 rake cucumber capybara selenium-webdriver rspec browserstack-local parallel_tests
-RUN gem install toml-rb
+# Copy our main file
+COPY main.go .
 
-#Hugo - October 2017 build
-ENV HUGO_VERSION=0.48
-ADD https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz /tmp
-RUN tar -xf /tmp/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz -C /tmp \
-    && mkdir -p /usr/local/sbin \
-    && mv /tmp/hugo /usr/local/sbin/hugo \
-    && rm -rf /tmp/hugo_${HUGO_VERSION}_linux_amd64
+# Build the Golang app
+RUN CGO_ENABLED=0 GOOS=linux go build -o app .
 
-# Node.JS
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
-RUN apt-get install nodejs -y
+# Create the second stage of our build
+FROM scratch
 
-# Typescript
-RUN npm install -g typescript
+WORKDIR /app
 
-# Fontcustom
-RUN apt-get install zlib1g-dev fontforge -y
-RUN git clone https://github.com/bramstein/sfnt2woff-zopfli.git sfnt2woff-zopfli && cd sfnt2woff-zopfli && make && mv sfnt2woff-zopfli /usr/local/bin/sfnt2woff
-RUN git clone --recursive https://github.com/google/woff2.git && cd woff2 && make clean all && mv woff2_compress /usr/local/bin/ && mv woff2_decompress /usr/local/bin/
-RUN gem install --no-document fontcustom
-
-# Set up the workspace
-RUN mkdir -p /ifal
-WORKDIR /ifal/ifal.tech
-ENV PATH=$PATH:/ifal/workspace/bin
+# Copy from the first stage (--from=0)
+COPY --from=0 /go/src/github.com/hugomd/go-example/app .
+CMD ["./app"]
