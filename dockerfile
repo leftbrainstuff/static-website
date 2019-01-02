@@ -1,7 +1,7 @@
-FROM ubuntu
-MAINTAINER Leftbrain Stuff (leftbrainstuff@gmail.com)
-RUN apt-get update
-RUN apt-get install -y nginx
-ENTRYPOINT [“/usr/sbin/nginx”,”-g”,”daemon on;”]
-EXPOSE 80
-RUN wait
+FROM nginx
+
+COPY wrapper.sh /
+
+COPY html /usr/share/nginx/html
+
+CMD ["./wrapper.sh"]
