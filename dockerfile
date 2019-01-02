@@ -1,6 +1,6 @@
-FROM node:6-onbuild
+FROM ubuntu
 MAINTAINER Leftbrain Stuff (leftbrainstuff@gmail.com)
 RUN apt-get update
 RUN apt-get install -y nginx
-ENTRYPOINT [“/usr/sbin/nginx”,”-g”,”daemon off;”]
+ENTRYPOINT [“/usr/sbin/nginx”,”-g”,”daemon on;”]
 EXPOSE 80
