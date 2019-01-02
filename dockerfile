@@ -1,7 +1,7 @@
 FROM golang:1.11.2-alpine3.8
 
 # Set the working directory
-WORKDIR /go/src/github.com/hugomd/go-example
+WORKDIR /go/src/github.com/leftbrainstuff/static-website
 
 # Copy our main file
 COPY main.go .
